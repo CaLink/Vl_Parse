@@ -31,8 +31,8 @@ class VlSpider(scrapy.Spider):
     #   Настройки в settings.py
         #sleep(3);
 
-    #   Падает, если тег не имеет атрибута
-        next = response.xpath("//a[contains(., 'следующая >')]").attrib['href']
+    
+        next = response.xpath("//a[contains(., 'следующая >')]")
         if next is not None:
-            yield response.follow(next,callback=self.parse)
+            yield response.follow(next.attrib['href'],callback=self.parse)
         
