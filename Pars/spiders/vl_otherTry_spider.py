@@ -1,5 +1,6 @@
 import scrapy
 import json
+from json import JSONEncoder
 
 
 class Page:
@@ -12,7 +13,9 @@ class Base:
         self.name = name
         self.url = url
         
-    
+class PageEncoder(JSONEncoder):
+    def default(self,o):
+        return o.__dict__
     
 
 
@@ -21,7 +24,7 @@ class VlOtherSpider(scrapy.Spider):
     name = "VLother"
     domain = "vl.ru"
 
-    PageList = []
+    PageList = ["SAS"]
     
     def start_requests(self):
         urls = ['https://www.vl.ru/travel?page=1']
@@ -29,10 +32,14 @@ class VlOtherSpider(scrapy.Spider):
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
-        with open('data.json','w') as f:
-            (json.dump(self.PageList,sort_keys=True,indent=4))
-
         
+        # Я не понимаю, почему тут данных нет, но в методе parse они есть в PageList
+        # Хотя это должны быть одни и те же данные.
+        #with open('data.json','w') as f:
+            #f.write(json.dumps(self.PageList,sort_keys=True,indent=4,cls=PageEncoder))
+            #f.write(self.PageList[0].places[0].name)
+
+        #Кажется, он завершает этот метод раньше, чем выпооняет parse()
 
     def parse(self, response):
         
@@ -45,10 +52,18 @@ class VlOtherSpider(scrapy.Spider):
         
         for tag in response.xpath('//h4/a'):
             page.places.append(Base(tag.xpath('text()').get(),tag.attrib['href']))
-            
+
+
 
         self.PageList.append(page)
 
-        #next = response.xpath("//a[contains(., 'следующая >')]")
-        #if next is not None:
-        #   yield response.follow(next.attrib['href'],callback=self.parse)
+#        with open('data.json','w') as f:
+#           f.write(json.dumps(self.PageList,sort_keys=True,indent=4,cls=PageEncoder))
+
+        next = response.xpath("//a[contains(., 'следующая >')]")
+        if next is not None:
+           yield response.follow(next.attrib['href'],callback=self.parse)
+        else:
+            with open('data.json','w') as f:
+                f.write(json.dumps(self.PageList,sort_keys=True,indent=4,cls=PageEncoder))
+            
