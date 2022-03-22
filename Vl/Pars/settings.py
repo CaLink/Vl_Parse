@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = 'Pars.spiders'
 #USER_AGENT = 'Pars (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -87,5 +87,5 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 FEED_EXPORT_ENCODING = 'utf-8'
-DOWNLOAD_DELAY =  5
+DOWNLOAD_DELAY =  10
 CONCURRENT_REQUESTS_PER_DOMAIN = 2 
